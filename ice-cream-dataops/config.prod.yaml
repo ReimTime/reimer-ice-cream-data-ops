@@ -27,7 +27,7 @@ variables:
         icapi_trigger_client_secret: ${ICAPI_EXTRACTORS_CLIENT_SECRET}
         icapi_extractors_client_id: ${ICAPI_EXTRACTORS_CLIENT_ID}
         icapi_extractors_client_secret: ${ICAPI_EXTRACTORS_CLIENT_SECRET}
-
+#asdasd
       use_cases:
         oee:
           data_pipeline_oee_source_id: 407187a8-4b33-4377-9f23-0aa83898860a

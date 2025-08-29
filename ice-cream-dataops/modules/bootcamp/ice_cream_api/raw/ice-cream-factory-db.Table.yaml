@@ -1,0 +1,2 @@
+- dbName: ice-cream-factory-db # This is a table to store asset information in raw
+  tableName: assets

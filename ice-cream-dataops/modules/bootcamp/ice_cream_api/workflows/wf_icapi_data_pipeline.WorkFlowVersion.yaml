@@ -1,0 +1,54 @@
+workflowExternalId: wf_icapi_data_pipeline
+version: '1'
+workflowDefinition:
+  tasks:
+    # Create the Asset Hierarchy
+    - externalId: '{{ workflow_external_id }}_create_asset_hierarchy_transformation'
+      type: 'transformation'
+      parameters:
+        transformation:
+          externalId: create_asset_hierarchy
+          concurrencyPolicy: fail
+      name: 'Create Asset Hierarchy'
+      description: Creates the asset hierarchy
+      retries: 3
+      timeout: 3600
+      onFailure: abortWorkflow
+    # Contextualize Timeseries data (tie it to my asset hierarchy)
+    - externalId: '{{ workflow_external_id }}_contextualize_time_series_data_transformation'
+      type: 'transformation'
+      parameters:
+        transformation:
+          externalId: contextualize_ts_assets
+          concurrencyPolicy: fail
+      name: 'Contextualize Timeseries Assets'
+      description: Contetualizes Timeseries Assets
+      retries: 3
+      timeout: 3600
+      onFailure: abortWorkflow
+      dependsOn:
+        - externalId: '{{ workflow_external_id }}_create_asset_hierarchy_transformation'
+    # bring in timeseries data
+    - externalId: '{{ workflow_external_id }}_bring_in_timeseries_data_function'
+      type: function
+      parameters:
+        function:
+          externalId: icapi_datapoints_extractor
+          data: { }
+      retries: 3
+      timeout: 3600
+      onFailure: abortWorkflow
+      dependsOn:
+        - externalId: '{{ workflow_external_id }}_contextualize_time_series_data_transformation'
+    # calculate OEE
+    - externalId: '{{ workflow_external_id }}_calculate_oee_function'
+      type: function
+      parameters:
+        function:
+          externalId: oee_timeseries
+          data: { }
+      retries: 3
+      timeout: 3600
+      onFailure: abortWorkflow
+      dependsOn:
+        - externalId: '{{ workflow_external_id }}_bring_in_timeseries_data_function'
